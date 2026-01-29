@@ -1,4 +1,4 @@
-# Docker Deploy Guide (A–Z)
+# Docker + Local Network Deployment Guide
 
 This is the step-by-step playbook to make an app Docker-deploy-ready **from scratch** and verify it works on a fresh clone. It assumes a Node/Next-style stack like pdf-search.
 
@@ -117,3 +117,22 @@ Flag notes:
 Meaning of up/down vs start/stop:
 - **Up/Down** creates/removes containers (and builds images if needed).
 - **Start/Stop** pauses/resumes existing containers created by `up`.
+
+---
+
+## 7) Share Local Dev Server on Company Wi‑Fi
+
+If you want coworkers on the same Wi‑Fi to access your local dev server, you must bind the dev server to **0.0.0.0** and share your local IP.
+
+Steps (Next.js example):
+1. Update the dev script in `package.json`:
+   - `next dev -H 0.0.0.0 -p 3000`
+2. Run:
+   - `npm run dev`
+3. Find your local IP (e.g., `192.168.x.x`) and share:
+   - `http://YOUR_IP:3000`
+
+Notes:
+- Make sure your laptop firewall allows inbound connections on port 3000.
+- Everyone must be on the same Wi‑Fi/VLAN.
+- If this is not Next.js, use the framework's equivalent "host 0.0.0.0" flag.
