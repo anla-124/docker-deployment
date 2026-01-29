@@ -126,7 +126,8 @@ If you want coworkers on the same Wi‑Fi to access your local dev server, you m
 
 Steps (Next.js example):
 1. Update the dev script in `package.json`:
-   - `next dev -H 0.0.0.0 -p 3000`
+   - Change `"dev": "next dev"` to:
+   - `"dev": "next dev -H 0.0.0.0 -p 3000"`
 2. Run:
    - `npm run dev`
 3. Find your local IP (e.g., `192.168.x.x`) and share:
