@@ -137,3 +137,81 @@ Notes:
 - Make sure your laptop firewall allows inbound connections on port 3000.
 - Everyone must be on the same Wi‑Fi/VLAN.
 - If this is not Next.js, use the framework's equivalent "host 0.0.0.0" flag.
+
+---
+
+## 8) Set Up Google Login via Supabase
+
+This app uses Supabase Auth with Google OAuth. After sign-in, Supabase handles the token exchange and session management automatically. The app code lives in `src/components/auth/oauth-buttons.tsx` (client) and `src/app/auth/callback/route.ts` (server callback).
+
+### A. Create Google OAuth Credentials
+
+1. Go to [Google Cloud Console](https://console.cloud.google.com/).
+2. Create a new project (or select an existing one).
+3. Navigate to **APIs & Services > OAuth consent screen**.
+   - Choose **External** user type (or Internal if using Google Workspace).
+   - Fill in the required fields: App name, User support email, Developer contact.
+   - Add scopes: `email`, `profile`, `openid`.
+   - Add test users if the app is still in "Testing" publishing status.
+4. Navigate to **APIs & Services > Credentials**.
+5. Click **Create Credentials > OAuth client ID**.
+   - Application type: **Web application**.
+   - **Authorized redirect URIs** — add your Supabase callback URL:
+     ```
+     https://<your-supabase-project-ref>.supabase.co/auth/v1/callback
+     ```
+     You can find your project ref in the Supabase dashboard URL or under **Project Settings > General**.
+6. Copy the **Client ID** and **Client Secret**.
+
+### B. Enable Google Provider in Supabase
+
+1. Open your Supabase project dashboard at [supabase.com/dashboard](https://supabase.com/dashboard).
+2. Go to **Authentication > Providers**.
+3. Find **Google** in the list and enable it.
+4. Paste the **Client ID** and **Client Secret** from the previous step.
+5. The **Callback URL (Redirect URL)** shown on this page is the one you added to Google Cloud in step A.5 above. Confirm they match.
+6. Click **Save**.
+
+### C. Configure Redirect URLs in Supabase
+
+1. In the Supabase dashboard, go to **Authentication > URL Configuration**.
+2. Set the **Site URL** to your app's base URL:
+   - Local development: `http://localhost:3000`
+   - Production: `https://your-production-domain.com`
+3. Add **Redirect URLs** (these are where Supabase is allowed to redirect after login):
+   ```
+   http://localhost:3000/auth/callback
+   https://your-production-domain.com/auth/callback
+   ```
+   The app's callback handler at `/auth/callback` exchanges the OAuth code for a session and redirects the user to `/dashboard`.
+
+### D. Environment Variables
+
+No extra environment variables are needed beyond the standard Supabase ones already in `.env.template`:
+
+```
+NEXT_PUBLIC_SUPABASE_URL=https://<your-project-ref>.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=<your-supabase-anon-key>
+SUPABASE_SERVICE_ROLE_KEY=<your-supabase-service-role-key>
+```
+
+Google OAuth credentials are stored in the Supabase dashboard, not in your app's environment.
+
+### E. Verify the Setup
+
+1. Start the app (`npm run dev` or `docker compose up -d --build`).
+2. Open `http://localhost:3000/login`.
+3. Click **Log in with Google**.
+4. Complete the Google sign-in flow.
+5. You should be redirected to `/dashboard`.
+
+If something goes wrong, check:
+- The Supabase callback URL in Google Cloud matches exactly (no trailing slash mismatch).
+- The redirect URLs in Supabase **Authentication > URL Configuration** include your app's `/auth/callback` path.
+- Your Google OAuth consent screen has the test user added (if still in "Testing" mode).
+- Browser console and `docker compose logs -f app` for error details.
+- The `/auth/auth-code-error` page will display if the OAuth code exchange fails.
+
+### F. Local Development Note
+
+On the login page (`src/app/login/page.tsx`), an email/password login form is shown alongside the Google button when running on `localhost` / `127.0.0.1`. This is for convenience during local development only. In production, only the Google login button is displayed.
