@@ -32,6 +32,7 @@ Tasks:
 3) Add .dockerignore (node_modules, .env*, .next, dist, logs, tmp).
 4) Create docker-compose.yml:
    - app service exposes port 3000
+   - use env_file: .env.local so the container loads environment variables automatically
    - add any required dependencies (db/vector) if the app uses them
 5) Create .env.template with placeholders for all required env vars.
 6) Add a short RUNBOOK section in README with exact commands + health check.
