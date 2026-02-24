@@ -57,8 +57,9 @@ Expected files after this step:
 
 0. Ensure Docker Desktop (or Docker Engine) is running.
 1. Create env file:
-   - `cp .env.template .env.local`
-   - Fill in real values (do not commit secrets).
+   - Ensure `.env.local` exists with all required env vars filled in.
+   - If the repo provides `.env.template`, use it as a starting point: `cp .env.template .env.local`
+   - Do not commit `.env.local` or any secrets.
 2. Start containers:
    - `docker compose up -d --build`
 3. Health check:
@@ -78,8 +79,8 @@ Steps:
 1. Commit and push all Docker files to GitHub.
 2. Clone to a new folder.
 3. Set up credentials:
-   - `cp .env.template .env.local`
-   - Fill in real values.
+   - Ensure `.env.local` exists with all required env vars filled in.
+   - If the repo provides `.env.template`, use it as a starting point: `cp .env.template .env.local`
    - Add any required service account JSON files (e.g., `credentials/`).
 4. Run:
    - `docker compose up -d --build`
